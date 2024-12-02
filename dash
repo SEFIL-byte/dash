@@ -11,27 +11,75 @@ local dashSpeed = 100 -- How fast the dash is
 local dashDuration = 0.2 -- How long the dash lasts
 local dashCooldown = 1 -- Time between dashes
 local isDashing = false
+local dashKey = "q" -- Default dash key
+
+-- GUI setup
+local gui = Instance.new("ScreenGui")
+local frame = Instance.new("Frame")
+local keybindLabel = Instance.new("TextLabel")
+local keybindInput = Instance.new("TextBox")
+
+gui.Name = "KeybindGui"
+gui.Parent = game.CoreGui -- Parent to CoreGui so it shows in-game
+
+frame.Name = "MainFrame"
+frame.Size = UDim2.new(0, 150, 0, 50)
+frame.Position = UDim2.new(0.5, -75, 0.8, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 2
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+keybindLabel.Name = "KeybindLabel"
+keybindLabel.Size = UDim2.new(1, 0, 0.5, 0)
+keybindLabel.Position = UDim2.new(0, 0, 0, 0)
+keybindLabel.Text = "Dash Key:"
+keybindLabel.BackgroundTransparency = 1
+keybindLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+keybindLabel.Font = Enum.Font.SourceSans
+keybindLabel.TextSize = 14
+keybindLabel.Parent = frame
+
+keybindInput.Name = "KeybindInput"
+keybindInput.Size = UDim2.new(0.8, 0, 0.4, 0)
+keybindInput.Position = UDim2.new(0.1, 0, 0.6, 0)
+keybindInput.Text = dashKey
+keybindInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+keybindInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+keybindInput.Font = Enum.Font.SourceSans
+keybindInput.TextSize = 14
+keybindInput.ClearTextOnFocus = false
+keybindInput.Parent = frame
+
+-- Update dash key when input changes
+keybindInput.FocusLost:Connect(function()
+    local newKey = keybindInput.Text:lower()
+    if #newKey == 1 then
+        dashKey = newKey
+        keybindLabel.Text = "Key: " .. dashKey:upper()
+    else
+        keybindLabel.Text = "Invalid Key"
+    end
+end)
 
 -- Fire trail effect
 local function createFireTrail()
     if isDashing then
-        -- Create a fire part behind the player
         local firePart = Instance.new("Part")
         firePart.Size = Vector3.new(2, 0.2, 2)
-        firePart.CFrame = humanoidRootPart.CFrame * CFrame.new(0, -3, -3)  -- Position it slightly behind the player
+        firePart.CFrame = humanoidRootPart.CFrame * CFrame.new(0, -3, -3)
         firePart.Anchored = true
         firePart.CanCollide = false
         firePart.Transparency = 1
         firePart.Parent = workspace
 
-        -- Add fire effect
         local fire = Instance.new("Fire")
         fire.Heat = 10
         fire.Size = 5
         fire.Parent = firePart
 
-        -- Clean up fire part after the dash duration
-        game:GetService("Debris"):AddItem(firePart, dashDuration) -- Fire part will be removed after dashDuration
+        game:GetService("Debris"):AddItem(firePart, dashDuration)
     end
 end
 
@@ -40,30 +88,25 @@ local function dash()
     if isDashing then return end
     isDashing = true
 
-    -- Create BodyVelocity for dash movement
     local bodyVelocity = Instance.new("BodyVelocity")
     bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
     bodyVelocity.Velocity = humanoidRootPart.CFrame.LookVector * dashSpeed
     bodyVelocity.Parent = humanoidRootPart
 
-    -- Create fire trail effect while dashing
     local startTime = tick()
     while tick() - startTime < dashDuration do
-        createFireTrail()  -- Create the fire trail effect
-        wait(0.1)  -- Repeat trail effect at regular intervals while dashing
+        createFireTrail()
+        wait(0.1)
     end
 
-    -- Remove BodyVelocity after dashDuration
     bodyVelocity:Destroy()
-
-    -- Cooldown before next dash
     wait(dashCooldown)
     isDashing = false
 end
 
--- Detecting Q key press to trigger the dash
+-- Detect key press to trigger the dash
 mouse.KeyDown:Connect(function(key)
-    if key:lower() == "q" then
+    if key:lower() == dashKey then
         dash()
     end
 end)
