@@ -23,8 +23,8 @@ gui.Name = "KeybindGui"
 gui.Parent = game.CoreGui -- Parent to CoreGui so it shows in-game
 
 frame.Name = "MainFrame"
-frame.Size = UDim2.new(0, 150, 0, 50)
-frame.Position = UDim2.new(0.5, -75, 0.8, 0)
+frame.Size = UDim2.new(0, 120, 0, 40) -- Smaller size
+frame.Position = UDim2.new(0.5, -60, 0.85, 0) -- Adjusted position
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 2
 frame.Active = true
@@ -34,21 +34,21 @@ frame.Parent = gui
 keybindLabel.Name = "KeybindLabel"
 keybindLabel.Size = UDim2.new(1, 0, 0.5, 0)
 keybindLabel.Position = UDim2.new(0, 0, 0, 0)
-keybindLabel.Text = "Dash Key:"
+keybindLabel.Text = "Dash Key: " .. dashKey:upper()
 keybindLabel.BackgroundTransparency = 1
 keybindLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 keybindLabel.Font = Enum.Font.SourceSans
-keybindLabel.TextSize = 14
+keybindLabel.TextSize = 12 -- Smaller text
 keybindLabel.Parent = frame
 
 keybindInput.Name = "KeybindInput"
 keybindInput.Size = UDim2.new(0.8, 0, 0.4, 0)
-keybindInput.Position = UDim2.new(0.1, 0, 0.6, 0)
+keybindInput.Position = UDim2.new(0.1, 0, 0.5, 0)
 keybindInput.Text = dashKey
 keybindInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 keybindInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 keybindInput.Font = Enum.Font.SourceSans
-keybindInput.TextSize = 14
+keybindInput.TextSize = 12 -- Smaller text
 keybindInput.ClearTextOnFocus = false
 keybindInput.Parent = frame
 
@@ -57,9 +57,9 @@ keybindInput.FocusLost:Connect(function()
     local newKey = keybindInput.Text:lower()
     if #newKey == 1 then
         dashKey = newKey
-        keybindLabel.Text = "Key: " .. dashKey:upper()
+        keybindLabel.Text = "Dash Key: " .. dashKey:upper()
     else
-        keybindLabel.Text = "Invalid Key"
+        keybindLabel.Text = "Dash Key: " .. dashKey:upper() -- Keep the last valid key
     end
 end)
 
